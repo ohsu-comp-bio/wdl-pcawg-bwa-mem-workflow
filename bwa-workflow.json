@@ -1,0 +1,12 @@
+{
+  "bwa_workflow.unalignedBams": "Array[File]",
+  "bwa_workflow.outputFilePrefix": "String",
+  "bwa_workflow.prepare_reference_files.referenceDir": "String"
+  "bwa_workflow.prepare_reference_files.reference_gz": "File",
+  "bwa_workflow.prepare_reference_files.reference_gz_amb": "File",
+  "bwa_workflow.prepare_reference_files.reference_gz_ann": "File",
+  "bwa_workflow.prepare_reference_files.reference_gz_bwt": "File",
+  "bwa_workflow.prepare_reference_files.reference_gz_fai": "File",
+  "bwa_workflow.prepare_reference_files.reference_gz_pac": "File",
+  "bwa_workflow.prepare_reference_files.reference_gz_sa": "File"
+}
