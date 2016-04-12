@@ -1,28 +1,3 @@
-task prepare_reference_files {
-  File reference_gz
-  File reference_gz_fai
-  File reference_gz_amb
-  File reference_gz_ann
-  File reference_gz_bwt
-  File reference_gz_pac
-  File reference_gz_sa
-  String referenceDir
-
-  command {
-    ln -s ${reference_gz} ${referenceDir + "/" + "genome.fa.gz"}; \
-    ln -s ${reference_gz_fai} ${referenceDir + "/" + "genome.fa.gz.fai"}; \
-    ln -s ${reference_gz_amb} ${referenceDir + "/" + "genome.fa.gz.64.amb"}; \
-    ln -s ${reference_gz_ann} ${referenceDir + "/" + "genome.fa.gz.64.ann"}; \
-    ln -s ${reference_gz_bwt} ${referenceDir + "/" + "genome.fa.gz.64.bwt"}; \
-    ln -s ${reference_gz_pac} ${referenceDir + "/" + "genome.fa.gz.64.pac"}; \
-    ln -s ${reference_gz_sa} ${referenceDir + "/" + "genome.fa.gz.64.sa"}
-  }
-
-  output {
-    String reference_genome = "${referencDir}/genome.fa.gz"
-  }
-}
-
 task get_basename {
   File f
 
@@ -33,6 +8,10 @@ task get_basename {
   output {
     String base = read_string(stdout())
   }
+
+  runtime {
+    docker: "bwa-workflow"
+  }
 }
 
 task read_header {
@@ -41,13 +20,17 @@ task read_header {
   String outputDir
 
   command {
-    samtools view -H ${unalignedBam} \
-    | \
-    perl -nae 'next unless /^\\@RG/; s/\\tPI:\\s*\\t/\\t/; s/\\tPI:\\s*\\z/\\n/; s/\\t/\\\\t/g; print' > "${outputDir}/${bamName}_header.txt"
+    samtools view -H ${unalignedBam} | \
+    perl -nae 'next unless /^\@RG/; s/\tPI:\t/\t/; s/\tPI:\s*\t/\t/; s/\tPI:\s*\z/\n/; s/\t/\\t/g; print' > "${outputDir}/${bamName}_header.txt"
   }
 
   output {
-    File header = "${outputDir}/${bamName}_header.txt"
+    String header = read_string("${outputDir}/${bamName}_header.txt")
+    File header_file = "${outputDir}/${bamName}_header.txt"
+  }
+
+  runtime {
+    docker: "bwa-workflow"
   }
 }
 
@@ -63,27 +46,39 @@ task count_reads {
   output {
     File counts_file = "${outputDir}/${bamName}_read_count.txt"
   }
+
+  runtime {
+    docker: "bwa-workflow"
+  }
 }
 
 task align {
   File unalignedBam
-  File bamHeader
+  String bamHeader
   File reference_gz
+  File reference_gz_fai
+  File reference_gz_amb
+  File reference_gz_ann
+  File reference_gz_bwt
+  File reference_gz_pac
+  File reference_gz_sa
   String bamName
   String outputDir
   Int threads
 
   command {
-    bamtofastq exlcude=QCFAIL,SECONDARY,SUPPLEMENTARY T=${bamName + ".t"} S=${bamName + ".s"} O=${bamName + ".o"} O2=${bamName + ".o2"} collate=1 tryoq=1 filename=${unalignedBam} \
-    | \
-    bwa mem -p -t ${threads} -T 0 -R ${sep="" read_lines(bamHeader)} ${reference_gz} - \
-    | \
-    bamsort inputformat=sam level=1 inputthreads=2 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${bamName + ".sorttmp"} O=${outputDir + "/" + bamName + ".bam"} 2> ${outputDir + "/" + bamName + "_bamsort_info.txt"}
+    bamtofastq exlcude=QCFAIL,SECONDARY,SUPPLEMENTARY T=${bamName + ".t"} S=${bamName + ".s"} O=${bamName + ".o"} O2=${bamName + ".o2"} collate=1 tryoq=1 filename=${unalignedBam} | \
+    bwa mem -p -t ${threads} -T 0 -R "${bamHeader}" ${reference_gz} - | \
+    bamsort inputformat=sam level=1 inputthreads=2 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${bamName + ".sorttmp"} O=${outputDir + "/" + bamName + "_aligned.bam"} 2> ${outputDir + "/" + bamName + "_bamsort_info.txt"}
   }
 
   output {
     File bam_output = "${outputDir}/${bamName}_aligned.bam"
     File bam_sortinfo = "${outputDir}/${bamName}_bamsort_info.txt"
+  }
+
+  runtime {
+    docker: "bwa-workflow"
   }
 }
 
@@ -102,6 +97,10 @@ task bam_stats_qc {
 
   output {
     File bam_stats = "${outputDir}/${bamName}.bas"
+  }
+
+  runtime {
+    docker: "bwa-workflow"
   }
 }
 
@@ -128,25 +127,31 @@ task merge {
     File merged_bam = "${outputDir}/${outputFilePrefix}.bam"
     File merged_bam_metrics = "${outputDir}/${outputFilePrefix}.metrics"
   }
+
+  runtime {
+    docker: "bwa-workflow"
+  }
 }
 
 task extract_unaligned_reads {
   File inputBam
-  String reference_gz
+  File reference_gz
   String outputFilePrefix
   String outputDir
   Int f
 
   command {
-    samtools view -h -f ${f} ${inputBam} \
-    | \
-    remove_both_ends_unmapped_reads.pl \
-    | \
+    samtools view -h -f ${f} ${inputBam} | 
+    remove_both_ends_unmapped_reads.pl | \
     bamsort inputformat=sam level=1 inputthreads=2 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${outputFilePrefix + ".sorttmp"} O=${outputDir + "/" + outputFilePrefix + "_unmappedReads" + f + ".bam"}
   }
 
   output {
     File unmapped_reads = "${outputDir}/${outputFilePrefix}_unmappedReads_f${f}.bam"
+  }
+
+  runtime {
+    docker: "bwa-workflow"
   }
 }
 
@@ -162,16 +167,19 @@ task extract_reads_both_mates_unaligned {
   output {
     File unmapped_reads = "${outputDir}/${outputFilePrefix}_unmappedReads_f12.bam"
   }
+
+  runtime {
+    docker: "bwa-workflow"
+  }
 }
 
 
 workflow bwa_workflow {
   Array[File]+ unalignedBams
+  File reference_gz
   String outputFilePrefix
-  String ouputDir = "/output/"
+  String outputDir = "./"
   Int threads = 8
-
-  call prepare_reference_files
 
   scatter(bam in unalignedBams) {
     call get_basename {
@@ -184,24 +192,24 @@ workflow bwa_workflow {
              outputDir=outputDir
     }
 
-    call align {
-      input: unalignedBam=bam,
-             bamHeader=read_header.header,
-             bamName=get_basename.base,
-             threads=threads,
-             outputDir=outputDir, 
-             reference_gz=prepare_reference_files.reference_genome
-    }
-
     call count_reads {
       input: unalignedBam=bam,
              bamName=get_basename.base,
              outputDir=outputDir
     }
 
+    call align {
+      input: unalignedBam=bam,
+             bamHeader=read_header.header,
+             bamName=get_basename.base,
+             threads=threads,
+             outputDir=outputDir, 
+             reference_gz=reference_gz
+    }
+
     call bam_stats_qc {
       input: bam=align.bam_output,
-             bamHeader=read_header.header,
+             bamHeader=read_header.header_file,
              readCount=count_reads.counts_file,
              bamName=get_basename.base,
              outputDir=outputDir
@@ -216,11 +224,11 @@ workflow bwa_workflow {
   }
 
   call extract_unaligned_reads as reads_unmapped {
-    input: inputBam=merge.merged_bam, 
-           f=4, 
-           outputFilePrefix=outputFilePrefix, 
+    input: inputBam=merge.merged_bam,
+           f=4,
+           outputFilePrefix=outputFilePrefix,
            outputDir=outputDir,
-           reference_gz=prepare_reference_files.reference_genome
+           reference_gz=reference_gz
   }
 
   call extract_unaligned_reads as reads_mate_unmapped {
@@ -228,7 +236,7 @@ workflow bwa_workflow {
            f=8, 
            outputFilePrefix=outputFilePrefix, 
            outputDir=outputDir,
-           reference_gz=prepare_reference_files.reference_genome
+           reference_gz=reference_gz
   }
 
   call extract_reads_both_mates_unaligned {

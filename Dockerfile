@@ -42,7 +42,7 @@ RUN apt-get -yqq update && \
                          libboost-dev \
                          libboost-iostreams-dev \
                          libpstreams-dev \
-                         libglib2.0-dev \                        
+                         libglib2.0-dev \
                          samtools \ 
                          tabix
 
