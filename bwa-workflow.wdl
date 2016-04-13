@@ -40,7 +40,8 @@ task count_reads {
   String outputDir
 
   command {
-    samtools view ${unalignedBam} | wc -l > "${outputDir}/${bamName}_read_count.txt"
+    samtools view ${unalignedBam} | \
+    wc -l > "${outputDir}/${bamName}_read_count.txt"
   }
 
   output {
@@ -67,14 +68,11 @@ task align {
   Int threads
 
   command {
-    bamtofastq exlcude=QCFAIL,SECONDARY,SUPPLEMENTARY T=${bamName + ".t"} S=${bamName + ".s"} O=${bamName + ".o"} O2=${bamName + ".o2"} collate=1 tryoq=1 filename=${unalignedBam} | \
-    bwa mem -p -t ${threads} -T 0 -R "${bamHeader}" ${reference_gz} - | \
-    bamsort inputformat=sam level=1 inputthreads=2 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${bamName + ".sorttmp"} O=${outputDir + "/" + bamName + "_aligned.bam"} 2> ${outputDir + "/" + bamName + "_bamsort_info.txt"}
+    bamtofastq exlcude=QCFAIL,SECONDARY,SUPPLEMENTARY T=${bamName + ".t"} S=${bamName + ".s"} O=${bamName + ".o"} O2=${bamName + ".o2"} collate=1 tryoq=1 filename=${unalignedBam} | bwa mem -p -t ${threads} -T 0 -R "${bamHeader}" ${reference_gz} - | bamsort inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${bamName + ".sorttmp"} O=${outputDir + "/" + bamName + "_aligned.bam"}
   }
 
   output {
     File bam_output = "${outputDir}/${bamName}_aligned.bam"
-    File bam_sortinfo = "${outputDir}/${bamName}_bamsort_info.txt"
   }
 
   runtime {
@@ -141,9 +139,9 @@ task extract_unaligned_reads {
   Int f
 
   command {
-    samtools view -h -f ${f} ${inputBam} | 
+    samtools view -h -f ${f} ${inputBam} | \
     remove_both_ends_unmapped_reads.pl | \
-    bamsort inputformat=sam level=1 inputthreads=2 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${outputFilePrefix + ".sorttmp"} O=${outputDir + "/" + outputFilePrefix + "_unmappedReads" + f + ".bam"}
+    bamsort inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${outputFilePrefix + ".sorttmp"} O=${outputDir + "/" + outputFilePrefix + "_unmappedReads" + f + ".bam"}
   }
 
   output {
@@ -178,8 +176,8 @@ workflow bwa_workflow {
   Array[File]+ unalignedBams
   File reference_gz
   String outputFilePrefix
-  String outputDir = "./"
-  Int threads = 8
+  String outputDir = "."
+  Int threads = 1
 
   scatter(bam in unalignedBams) {
     call get_basename {
