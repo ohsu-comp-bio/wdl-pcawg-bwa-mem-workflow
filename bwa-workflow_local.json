@@ -2,6 +2,8 @@
   "bwa_workflow.unalignedBams": ["/Users/strucka/Projects/wdl-bwa-workflow/testing/100Thousand.bam",
                                  "/Users/strucka/Projects/wdl-bwa-workflow/testing/100Thousand2.bam"],
   "bwa_workflow.outputFilePrefix": "test",
+  "bwa_workflow.threads": 1,
+  "bwa_workflow.sortMemMb": 512,
   "bwa_workflow.reference_gz": "/Users/strucka/Projects/Seqware-BWA-Workflow-resources/genome.fa.gz",
   "bwa_workflow.align.reference_gz_amb": "/Users/strucka/Projects/Seqware-BWA-Workflow-resources/genome.fa.gz.64.amb",
   "bwa_workflow.align.reference_gz_ann": "/Users/strucka/Projects/Seqware-BWA-Workflow-resources/genome.fa.gz.64.ann",

@@ -66,9 +66,12 @@ task align {
   String bamName
   String outputDir
   Int threads
+  Int sortMemMb
 
   command {
-    bamtofastq exlcude=QCFAIL,SECONDARY,SUPPLEMENTARY T=${bamName + ".t"} S=${bamName + ".s"} O=${bamName + ".o"} O2=${bamName + ".o2"} collate=1 tryoq=1 filename=${unalignedBam} | bwa mem -p -t ${threads} -T 0 -R "${bamHeader}" ${reference_gz} - | bamsort inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${bamName + ".sorttmp"} O=${outputDir + "/" + bamName + "_aligned.bam"}
+    bamtofastq exlcude=QCFAIL,SECONDARY,SUPPLEMENTARY T=${bamName + ".t"} S=${bamName + ".s"} O=${bamName + ".o"} O2=${bamName + ".o2"} collate=1 tryoq=1 filename=${unalignedBam} | \
+    bwa mem -p -t ${threads} -T 0 -R "${bamHeader}" ${reference_gz} - | \
+    bamsort blockmb=${sortMemMb} inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${bamName + ".sorttmp"} O=${outputDir + "/" + bamName + "_aligned.bam"}
   }
 
   output {
@@ -136,12 +139,13 @@ task extract_unaligned_reads {
   File reference_gz
   String outputFilePrefix
   String outputDir
+  Int sortMemMb
   Int f
 
   command {
     samtools view -h -f ${f} ${inputBam} | \
     remove_both_ends_unmapped_reads.pl | \
-    bamsort inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${outputFilePrefix + ".sorttmp"} O=${outputDir + "/" + outputFilePrefix + "_unmappedReads" + f + ".bam"}
+    bamsort blockmb=${sortMemMb} inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${outputFilePrefix + ".sorttmp"} O=${outputDir + "/" + outputFilePrefix + "_unmappedReads" + f + ".bam"}
   }
 
   output {
@@ -171,13 +175,13 @@ task extract_reads_both_mates_unaligned {
   }
 }
 
-
 workflow bwa_workflow {
   Array[File]+ unalignedBams
   File reference_gz
   String outputFilePrefix
   String outputDir = "."
-  Int threads = 1
+  Int sortMemMb
+  Int threads
 
   scatter(bam in unalignedBams) {
     call get_basename {
@@ -201,6 +205,7 @@ workflow bwa_workflow {
              bamHeader=read_header.header,
              bamName=get_basename.base,
              threads=threads,
+             sortMemMb=sortMemMb,
              outputDir=outputDir, 
              reference_gz=reference_gz
     }
@@ -215,7 +220,7 @@ workflow bwa_workflow {
   }
 
   call merge {
-    input: inputBams=align.bam_output, 
+    input: inputBams=align.bam_output,
            threads=threads,
            outputFilePrefix=outputFilePrefix, 
            outputDir=outputDir
@@ -224,15 +229,17 @@ workflow bwa_workflow {
   call extract_unaligned_reads as reads_unmapped {
     input: inputBam=merge.merged_bam,
            f=4,
+           sortMemMb=sortMemMb,
            outputFilePrefix=outputFilePrefix,
            outputDir=outputDir,
            reference_gz=reference_gz
   }
 
   call extract_unaligned_reads as reads_mate_unmapped {
-    input: inputBam=merge.merged_bam, 
-           f=8, 
-           outputFilePrefix=outputFilePrefix, 
+    input: inputBam=merge.merged_bam,
+           f=8,
+           sortMemMb=sortMemMb,
+           outputFilePrefix=outputFilePrefix,
            outputDir=outputDir,
            reference_gz=reference_gz
   }

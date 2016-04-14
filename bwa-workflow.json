@@ -1,6 +1,8 @@
 {
   "bwa_workflow.unalignedBams": "Array[File]",
   "bwa_workflow.outputFilePrefix": "String",
+  "bwa_workflow.threads": "Int",
+  "bwa_workflow.align.sortMemMb": "Int",
   "bwa_workflow.reference_gz": "File",
   "bwa_workflow.align.reference_gz_fai": "File",
   "bwa_workflow.align.reference_gz_amb": "File",
