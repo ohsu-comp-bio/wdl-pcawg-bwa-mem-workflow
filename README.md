@@ -18,6 +18,12 @@ You can also build a Docker image that has the workflow ready to run in it.
 
     docker build -t pancancer/pcawg-bwa-workflow:2.6.7 .
 
+
+## Running the Workflow with Cromwell
+
+    cromwell run bwa-workflow.wdl bwa-workflow.json
+
+
 ## Sample Data
 
 Some synthetic sample data.
@@ -47,3 +53,4 @@ We use a specific reference based on GRCh37.
 
 * Keiran Raine: PCAP-Core and BWA-Mem workflow design
 * Roshaan Tahir: Original BWA-Align workflow design
+* Adam Struck: WDL implementation
