@@ -126,6 +126,7 @@ task merge {
 
   output {
     File merged_bam = "${outputDir}/${outputFilePrefix}.bam"
+    File merged_bam_bai = "${outputDir}/${outputFilePrefix}.bam.bai"
     File merged_bam_metrics = "${outputDir}/${outputFilePrefix}.metrics"
   }
 
@@ -137,6 +138,7 @@ task merge {
 task extract_unaligned_reads {
   File inputBam
   File reference_gz
+  File reference_gz_fai
   String outputFilePrefix
   String outputDir
   Int sortMemMb
@@ -145,7 +147,7 @@ task extract_unaligned_reads {
   command {
     samtools view -h -f ${f} ${inputBam} | \
     remove_both_ends_unmapped_reads.pl | \
-    bamsort blockmb=${sortMemMb} inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${outputFilePrefix + ".sorttmp"} O=${outputDir + "/" + outputFilePrefix + "_unmappedReads" + f + ".bam"}
+    bamsort blockmb=${sortMemMb} inputformat=sam level=1 outputthreads=2 calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=${reference_gz} tmpfile=${outputFilePrefix + ".sorttmp"} O=${outputDir + "/" + outputFilePrefix + "_unmappedReads_f" + f + ".bam"}
   }
 
   output {
@@ -157,7 +159,7 @@ task extract_unaligned_reads {
   }
 }
 
-task extract_reads_both_mates_unaligned {
+task extract_both_reads_unaligned {
   File inputBam
   String outputFilePrefix
   String outputDir
@@ -178,6 +180,7 @@ task extract_reads_both_mates_unaligned {
 workflow bwa_workflow {
   Array[File]+ unalignedBams
   File reference_gz
+  File reference_gz_fai
   String outputFilePrefix
   String outputDir = "."
   Int sortMemMb
@@ -207,7 +210,8 @@ workflow bwa_workflow {
              threads=threads,
              sortMemMb=sortMemMb,
              outputDir=outputDir, 
-             reference_gz=reference_gz
+             reference_gz=reference_gz,
+             reference_gz_fai=reference_gz_fai
     }
 
     call bam_stats_qc {
@@ -226,32 +230,34 @@ workflow bwa_workflow {
            outputDir=outputDir
   }
 
-  call extract_unaligned_reads as reads_unmapped {
+  call extract_unaligned_reads as get_unmapped {
     input: inputBam=merge.merged_bam,
            f=4,
            sortMemMb=sortMemMb,
            outputFilePrefix=outputFilePrefix,
            outputDir=outputDir,
-           reference_gz=reference_gz
+           reference_gz=reference_gz,
+           reference_gz_fai=reference_gz_fai
   }
 
-  call extract_unaligned_reads as reads_mate_unmapped {
+  call extract_unaligned_reads as get_unmapped_mate {
     input: inputBam=merge.merged_bam,
            f=8,
            sortMemMb=sortMemMb,
            outputFilePrefix=outputFilePrefix,
            outputDir=outputDir,
-           reference_gz=reference_gz
+           reference_gz=reference_gz,
+           reference_gz_fai=reference_gz_fai
   }
 
-  call extract_reads_both_mates_unaligned {
+  call extract_both_reads_unaligned {
     input: inputBam=merge.merged_bam, 
            outputFilePrefix=outputFilePrefix, 
            outputDir=outputDir
   }
 
   call merge as merge_unmapped {
-    input: inputBams=[reads_unmapped.unmapped_reads, reads_mate_unmapped.unmapped_reads, extract_reads_both_mates_unaligned.unmapped_reads],
+    input: inputBams=[get_unmapped.unmapped_reads, get_unmapped_mate.unmapped_reads, extract_both_reads_unaligned.unmapped_reads],
            threads=threads,
            outputFilePrefix=outputFilePrefix,
            outputDir=outputDir
