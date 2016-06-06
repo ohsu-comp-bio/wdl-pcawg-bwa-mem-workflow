@@ -1,3 +1,4 @@
 cromwell-*/
 testing/
 tmp*
+*.tar.gz

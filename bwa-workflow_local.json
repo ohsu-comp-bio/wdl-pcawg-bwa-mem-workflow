@@ -1,6 +1,6 @@
 {
-  "bwa_workflow.unalignedBams": ["/Users/strucka/Projects/wdl-bwa-workflow/testing/1Million.bam",
-                                 "/Users/strucka/Projects/wdl-bwa-workflow/testing/1Million2.bam"],
+  "bwa_workflow.unalignedBams": ["/Users/strucka/Projects/wdl-bwa-workflow/testing/100Thousand.bam",
+                                 "/Users/strucka/Projects/wdl-bwa-workflow/testing/100Thousand2.bam"],
   "bwa_workflow.outputFilePrefix": "test",
   "bwa_workflow.threads": 1,
   "bwa_workflow.sortMemMb": 512,

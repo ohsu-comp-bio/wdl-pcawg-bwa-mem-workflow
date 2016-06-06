@@ -1,6 +1,6 @@
 FROM ubuntu:14.04
 
-LABEL version="2.6.7" \
+LABEL version="2.6.8" \
       description="ICGC-TCGA-PanCaner BWA Workflow"
 
 MAINTAINER Adam Struck <strucka@ohsu.edu>
@@ -106,8 +106,6 @@ RUN curl -ksSL -o tmp.tar.gz --retry 10 https://github.com/ICGC-TCGA-PanCancer/P
 # copy workflow specific scripts
 COPY ./scripts/* $OPT/bin/
 
-WORKDIR /home/
-
 VOLUME /output/
-
+WORKDIR /output/
 CMD /bin/bash
