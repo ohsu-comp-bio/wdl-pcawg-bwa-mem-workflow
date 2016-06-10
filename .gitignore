@@ -1,4 +1,5 @@
 cromwell-*/
 tmp*
 docker-tarballs/
-testing/
+*local*
+testing/hg19*
