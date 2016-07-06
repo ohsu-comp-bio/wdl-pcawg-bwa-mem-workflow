@@ -1,4 +1,5 @@
 cromwell-*/
 testing/
-tmp*
+docker-tarballs/
+*tmp*
 *.tar.gz
