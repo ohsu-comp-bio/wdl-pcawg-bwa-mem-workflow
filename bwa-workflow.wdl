@@ -10,7 +10,7 @@ task get_basename {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 
@@ -29,7 +29,7 @@ task read_header {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 
@@ -47,7 +47,7 @@ task count_reads {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 
@@ -76,7 +76,7 @@ task align {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 
@@ -97,7 +97,7 @@ task bam_stats_qc {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 
@@ -126,7 +126,7 @@ task merge {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 
@@ -149,7 +149,7 @@ task extract_unaligned_reads {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 
@@ -166,7 +166,7 @@ task extract_both_reads_unaligned {
   }
 
   runtime {
-    docker: "bwa-workflow"
+    docker: "pcawg-bwa-workflow"
   }
 }
 

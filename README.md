@@ -2,8 +2,8 @@
 
 ## Overview
 
-This is the workflow for the TCGA/ICGC PanCancer project that aligns
-whole genome sequences with BWA-Mem.
+This is the workflow for the TCGA/ICGC PanCancer Analysis of Whole Genomes (PCAWG) 
+project that aligns whole genome sequences with BWA-Mem.
 
 For more information about the project overall see the
 [PanCancer wiki space](https://wiki.oicr.on.ca/display/PANCANCER/PANCANCER+Home).
@@ -16,12 +16,12 @@ project where we maintain our production documentation and SOPs.
 
 You can also build a Docker image that has the workflow ready to run in it.
 
-    docker build -t pancancer/pcawg-bwa-workflow:2.6.7 .
+    docker build -t pcawg-bwa-workflow
 
 
 ## Running the Workflow with Cromwell
 
-    cromwell run bwa-workflow.wdl bwa-workflow.json
+    java -jar cromwell-19.3.jar run bwa-workflow.wdl bwa-workflow.json
 
 
 ## Sample Data
