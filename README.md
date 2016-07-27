@@ -16,12 +16,12 @@ project where we maintain our production documentation and SOPs.
 
 You can also build a Docker image that has the workflow ready to run in it.
 
-    docker build -t pcawg-bwa-workflow
+    docker build -t pcawg-bwa-mem-workflow
 
 
 ## Running the Workflow with Cromwell
 
-    java -jar cromwell-19.3.jar run bwa-workflow.wdl bwa-workflow.json
+    java -jar cromwell-19.3.jar run pcawg-bwa-mem-workflow.wdl pcawg-bwa-mem-workflow.json
 
 
 ## Sample Data
