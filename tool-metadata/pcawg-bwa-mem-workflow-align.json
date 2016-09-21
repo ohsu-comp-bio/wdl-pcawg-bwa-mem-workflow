@@ -1,0 +1,29 @@
+{
+  "owner": "strucka",
+  "approvalStatus": "review pending",
+  "fileSystem": "hdfs",
+  "schemaVersion": "1.0",
+  "dockerImage": "docker:5000/pcawg-bwa-mem-workflow",
+  "description": "alignment task of the PCAWG BWA mem workflow",
+  "version": "1.0",
+  "output": [],
+  "scheduler": {
+    "hardRequirements": {
+      "cpuCores": "8",
+      "diskSpace": "200000",
+      "memory": "16000"
+    },
+    "softRequirements": {
+      "cpuCores": "8",
+      "diskSpace": "200000",
+      "memory": "16000"
+    }
+  },
+  "input": [],
+  "name": "pcawg-bwa-mem-workflow-align",
+  "id": "",
+  "dockerDataVolume": "/output/",
+  "dockerWorkingDir": "/output/",
+  "family": "omics",
+  "uploadedBy": "strucka"
+}

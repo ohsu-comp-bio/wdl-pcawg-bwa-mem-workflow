@@ -1,13 +1,13 @@
 {
-  "bwa_workflow.unalignedBams": "Array[File]",
-  "bwa_workflow.outputFilePrefix": "String",
-  "bwa_workflow.threads": "Int",
-  "bwa_workflow.sortMemMb": "Int",
-  "bwa_workflow.reference_gz": "File",
-  "bwa_workflow.reference_gz_fai": "File",
-  "bwa_workflow.align.reference_gz_amb": "File",
-  "bwa_workflow.align.reference_gz_ann": "File",
-  "bwa_workflow.align.reference_gz_bwt": "File"
-  "bwa_workflow.align.reference_gz_pac": "File",
-  "bwa_workflow.align.reference_gz_sa": "File"
+  "pcawg_bwa_mem_workflow.unalignedBams": ["e8e2cd97-aad2-53ba-a39d-a66abf4fb626",
+                                           "4b726574-61f0-509c-9877-1a802f0f617d"],
+  "pcawg_bwa_mem_workflow.inputBasename": "hg19.chr22.5x.normal.bam",
+  "pcawg_bwa_mem_workflow.outputFilePrefix": "bwa-test",
+  "pcawg_bwa_mem_workflow.reference_gz": "bace2b6e-8b96-5fc7-b10b-7a5d2df2d6f8",
+  "pcawg_bwa_mem_workflow.reference_gz_fai": "af0518fa-cf7a-5fa7-8830-8087c8f80acb",
+  "pcawg_bwa_mem_workflow.align.reference_gz_amb": "930af4c1-7048-5d5d-bcbb-7bfe16e2c5a3",
+  "pcawg_bwa_mem_workflow.align.reference_gz_ann": "799fa11b-b04e-5c24-a152-a15ca15b64bf",
+  "pcawg_bwa_mem_workflow.align.reference_gz_bwt": "457b4561-862c-5ab7-91e3-5ec8eb372467",
+  "pcawg_bwa_mem_workflow.align.reference_gz_pac": "6920e28f-0717-5698-95f9-5a0b45b40d15",
+  "pcawg_bwa_mem_workflow.align.reference_gz_sa": "3b95523a-d4e7-5c5a-858e-0beb6ac416dd"
 }

@@ -1,0 +1,29 @@
+{
+  "owner": "strucka",
+  "approvalStatus": "review pending",
+  "fileSystem": "hdfs",
+  "schemaVersion": "1.0",
+  "dockerImage": "docker:5000/pcawg-bwa-mem-workflow",
+  "description": "for general tasks in the PCAWG BWA mem workflow",
+  "version": "1.0",
+  "output": [],
+  "scheduler": {
+    "hardRequirements": {
+      "cpuCores": "1",
+      "diskSpace": "1000",
+      "memory": "4000"
+    },
+    "softRequirements": {
+      "cpuCores": "1",
+      "diskSpace": "1000",
+      "memory": "4000"
+    }
+  },
+  "input": [],
+  "name": "pcawg-bwa-mem-workflow-generic",
+  "id": "",
+  "dockerDataVolume": "/output/",
+  "dockerWorkingDir": "/output/",
+  "family": "omics",
+  "uploadedBy": "strucka"
+}

@@ -1,0 +1,29 @@
+{
+  "owner": "strucka",
+  "approvalStatus": "review pending",
+  "fileSystem": "hdfs",
+  "schemaVersion": "1.0",
+  "dockerImage": "docker:5000/pcawg-bwa-mem-workflow",
+  "description": "extract reads - task of the PCAWG BWA mem workflow",
+  "version": "1.0",
+  "output": [],
+  "scheduler": {
+    "hardRequirements": {
+      "cpuCores": "1",
+      "diskSpace": "100000",
+      "memory": "8000"
+    },
+    "softRequirements": {
+      "cpuCores": "1",
+      "diskSpace": "100000",
+      "memory": "8000"
+    }
+  },
+  "input": [],
+  "name": "pcawg-bwa-mem-workflow-extract",
+  "id": "",
+  "dockerDataVolume": "/output/",
+  "dockerWorkingDir": "/output/",
+  "family": "omics",
+  "uploadedBy": "strucka"
+}
